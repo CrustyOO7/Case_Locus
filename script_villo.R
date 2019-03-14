@@ -1,10 +1,11 @@
 # clean workspace
 rm(list=ls())
 
-install.packages()
+install.packages("shinyjs")
 
 # load libraries
 library(tidyverse)
+library(shinyjs)
 
 library(ggmap)
 library(sf)
@@ -153,5 +154,30 @@ ggplot() +
 
 arrange(min_distance, min_distance)
 arrange(min_distance, desc(min_distance))
+
+villo_and_municipalities_shp$min_distance <- min_distance$min_distance
+
+municipalities_min_distance <- villo_and_municipalities_shp %>%
+  group_by(national_c, name_dut) %>%
+  summarise(avg_min_distance = mean(min_distance)) %>%
+  arrange(desc(avg_min_distance)) %>%
+  ungroup() %>%
+  st_drop_geometry()
+
+municipalities_min_distance
+
+municipalities_centroids_shp <- left_join(municipalities_centroids_shp, municipalities_min_distance, by = "national_c")
+
+# plot station
+tm_shape(municipalities_shp) +
+  tm_borders() +
+  tm_fill(col = "national_c", alpha = 0.3, legend.show = FALSE) +
+  tm_text("name_dut", size = 0.5) +
+  tm_shape(villo_and_municipalities_shp) +
+  tm_symbols(col = "black", size = 0.07) +
+  tm_shape(municipalities_centroids_shp) +
+  tm_bubbles(size = "avg_min_distance", alpha = 0.5, scale = 3) +
+  tm_scale_bar() +
+  tm_layout(title = "Average distance to nearest villo station per district")
 
 
