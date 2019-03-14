@@ -78,8 +78,8 @@ tm_shape(municipalities_centroids_shp) +
 
 tmap_mode("plot")
   
-ggplot(villo_and_municipalities_shp) +
-  geom_sf()
+# ggplot(villo_and_municipalities_shp) +
+#   geom_sf()
 
 # calculate villo station density
 villo_density_shp <- villo_and_municipalities_shp %>%
@@ -89,6 +89,7 @@ villo_density_shp <- villo_and_municipalities_shp %>%
   arrange(desc(density)) %>%
   ungroup()
 
+# join density data to centroid data
 municipalities_centroids_shp
 villo_density <- st_set_geometry(villo_density_shp, NULL)
 
@@ -96,30 +97,61 @@ municipalities_centroids_shp <- left_join(municipalities_centroids_shp,
           select(villo_density, national_c, count, density),
           by = "national_c")
 
-villo_density_shp
-class(villo_density_shp$area[1])
-municipalities_centroids_shp
-class(municipalities_centroids_shp$area[1])
-set_units(municipalities_centroids_shp$area, km^2)
+# villo_density_shp
+# class(villo_density_shp$area[1])
+# municipalities_centroids_shp
+# class(municipalities_centroids_shp$area[1])
+# set_units(municipalities_centroids_shp$area, km^2)
 
+# transform units to be more informative
 units(municipalities_centroids_shp$area) <- with(ud_units, km^2)
 municipalities_centroids_shp$density <- municipalities_centroids_shp$density * 1000000
 municipalities_centroids_shp$density <- set_units(municipalities_centroids_shp$density, km^-2)
 
+# plot villo station density's
 tm_shape(municipalities_shp) +
   tm_borders() +
   tm_fill(col = "national_c", alpha = 0.3, legend.show = FALSE) +
   tm_text("name_dut", size = 0.5) +
-  # tm_shape(villo_and_municipalities_shp) +
-  # tm_symbols(col = "national_c", size = 0.1) +
+  tm_shape(villo_and_municipalities_shp) +
+  tm_symbols(col = "black", size = 0.07) +
   # tm_legend(show = FALSE) +
   tm_shape(municipalities_centroids_shp) +
   tm_symbols(size = "density", alpha = 0.5, scale = 2) +
   tm_scale_bar()
 
+villo_and_municipalities_shp
+
+# calculate distances
+villo_distances <- st_distance(villo_and_municipalities_shp)
+dim(villo_distances)
+str(villo_distances)
+villo_distances <- as.tibble(villo_distances)
 
 
-select(villo_density_shp, national_c, count, density)
+# Find distance to the nearest vello station
+min_distance <- c()
+for (i in 1:nrow(villo_distances)) {
+  villo_distances[i,i] <- 500000
+  min_distance[i] <- min(villo_distances[i,])
+}
 
-st_join(municipalities_centroids_shp, villo_density_shp)
+length(min_distance)
+names(min_distance)
+str(min_distance)
+
+min_distance <- tibble(min_distance)
+
+summary(min_distance)
+
+boxplot(min_distance)
+
+ggplot() + 
+  geom_boxplot(data = min_distance, aes(x = as.factor(""), y = min_distance)) + 
+  ggtitle("distance to nearest villo station in meters") +
+  labs(y = "minimum distance in meter", x = "")
+
+arrange(min_distance, min_distance)
+arrange(min_distance, desc(min_distance))
+
 
