@@ -3,14 +3,10 @@ rm(list=ls())
 
 # load libraries
 library(tidyverse)
-library(ggmap)
-library(sp)
-library(rgdal)
+
 library(sf)
 library(tmap)
-library(RColorBrewer)
-library(raster)
-library(viridisLite)
+
 library(lubridate)
 
 # LOAD DATA IN AND PREP ----------------------
@@ -70,11 +66,6 @@ ggplot(filter(weeks, week == 9)) +
   geom_bar(stat = "identity", aes(x = `Time gap`*15/60, y = Count, color = as.factor(week))) +
   facet_wrap(~ as.factor(week_day))
 
-# plot drukte in week 10, pas op want stacked als meerdere weken
-ggplot(filter(weeks, week == 10)) +
-  geom_bar(stat = "identity", aes(x = `Time gap`*15/60, y = Count, color = as.factor(week))) +
-  facet_wrap(~ week_day, ncol = 7)
-
 # plot drukte over de weken van 04/03/2019 heen, pas op want stacked als meerdere weken
 ggplot(filter(weeks, week == 10)) +
   geom_bar(stat = "identity", aes(x = `Time gap`*15/60, y = Count, color = as.factor(week))) +
@@ -130,18 +121,5 @@ ggplot(count_per_hour) +
 # test_csv1 %>%
 #   glimpse() %>%
 #   summary()
-# 
-# test_csv4_st <- st_as_sf(test_csv4, coords = geom, crs = 4326)
-# 
-# 
-# pt1 = st_point(c(0,1))
-# class(pt1)
-# pt2 = st_point(c(1,1))
-# st_sfc(pt1, pt2)
-# d = data.frame(a = 1:2)
-# d$geom = st_sfc(pt1, pt2)
-# df = st_as_sf(d)
-# d$geom = c("POINT(0 0)", "POINT(0 1)")
-# df = st_as_sf(d, wkt = "geom")
 
 
