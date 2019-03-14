@@ -6,15 +6,7 @@ library(tidyverse)
 
 library(ggmap)
 library(sf)
-# library(raster)
 library(tmap)
-library(sp)
-library(rgdal)
-
-library(lubridate)
-
-library(RColorBrewer)
-library(viridisLite)
 
 library(stringr)
 
@@ -27,7 +19,6 @@ setwd(path1)
 getwd()
 
 # "/geoserver/bm_bike/wfs?service=wfs&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=bm_bike:villo&amp;outputFormat=shape-zip"
-
 villo_shp <- st_read("villo/villo.shp")
 plot(villo_shp$geometry)
 head(villo_shp)
@@ -58,10 +49,11 @@ municipalities_shp$area <- st_area(municipalities_shp)
 municipalities_centroids_shp <- st_centroid(municipalities_shp)
 dim(st_distance(villo_shp))
 
-plot(st_geometry(st_centroid(municipalities_shp)))
-
 # spatial join
 villo_and_municipalities_shp <- st_join(villo_shp, municipalities_shp)
+
+# check centroid geom
+plot(st_geometry(st_centroid(municipalities_shp)))
 
 # some plots, check crs's first
 st_crs(municipalities_shp)
