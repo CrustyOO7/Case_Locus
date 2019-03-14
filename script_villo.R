@@ -1,15 +1,12 @@
 # clean workspace
 rm(list=ls())
 
-install.packages("shinyjs")
-
 # load libraries
 library(tidyverse)
-library(shinyjs)
 
 library(ggmap)
 library(sf)
-library(raster)
+# library(raster)
 library(tmap)
 library(sp)
 library(rgdal)
@@ -24,7 +21,13 @@ library(stringr)
 library(units)
 
 # GET shape files -----------
+# set path
+path1 <- c("D:/NR Win folders/Documents/A folder/Data Science/R/Case_Locus")
+setwd(path1)
+getwd()
+
 # "/geoserver/bm_bike/wfs?service=wfs&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=bm_bike:villo&amp;outputFormat=shape-zip"
+
 villo_shp <- st_read("villo/villo.shp")
 plot(villo_shp$geometry)
 head(villo_shp)
@@ -156,6 +159,10 @@ arrange(min_distance, min_distance)
 arrange(min_distance, desc(min_distance))
 
 villo_and_municipalities_shp$min_distance <- min_distance$min_distance
+
+ggplot(villo_and_municipalities_shp) +
+  geom_boxplot(aes(x = name_dut, y = min_distance)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 municipalities_min_distance <- villo_and_municipalities_shp %>%
   group_by(national_c, name_dut) %>%
