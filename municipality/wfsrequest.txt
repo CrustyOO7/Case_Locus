@@ -1,0 +1,1 @@
+http://data.parking.brussels:80/geoserver/ParkingBrussels/wfs?version=1.1.0&request=GetFeature&typename=ParkingBrussels:municipality&outputFormat=shape-zip&srsname=EPSG:31370

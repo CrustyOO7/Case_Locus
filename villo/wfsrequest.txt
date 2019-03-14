@@ -1,0 +1,1 @@
+http://10.1.3.135/geoserver/bm_bike/wfs?service=wfs&version=1.1.0&request=GetFeature&typeName=bm_bike:villo&outputFormat=shape-zip
