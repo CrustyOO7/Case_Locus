@@ -1,0 +1,145 @@
+---
+title: "Villo"
+author: "NRI"
+date: "14 maart 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Preparation
+
+the workspace is cleanded and the nessecary libraries are loaded.
+
+```{r , results = "hide", message=FALSE}
+# clean workspace
+rm(list=ls())
+
+# load libraries
+library(tidyverse)
+
+library(ggmap)
+library(sf)
+library(tmap)
+
+library(stringr)
+
+library(units)
+```
+set path
+
+```{r , results = "hide"}
+# set wd
+path1 <- c("D:/NR Win folders/Documents/A folder/Data Science/R/Case_Locus")
+setwd(path1)
+getwd()
+```
+
+Load shapefiles of municipality's and villo stations
+
+```{r , results = "hide"}
+
+villo_shp <- st_read("villo/villo.shp")
+head(villo_shp)
+st_crs(villo_shp)
+plot(villo_shp$geometry)
+
+
+municipalities_shp <- st_read("municipality/municipality.shp")
+head(municipalities_shp)
+st_crs(municipalities_shp)
+plot(municipalities_shp$geometry)
+
+
+```
+
+A first visualisation
+
+```{r , results = "hide"}
+
+# visualise villo stations and municipalities Brussels
+tm_shape(municipalities_shp) +
+  tm_borders() +
+  tm_fill(col = "national_c", alpha = 0.3, legend.show = FALSE) +
+  tm_text("name_dut", size = 0.5) +
+  tm_shape(villo_shp) +
+  tm_dots(size = 0.1, shape = 1, col = "blue")
+
+```
+
+Integrate the two shapefiles and add area calculation. Also make centroid shp file for municipalities.
+
+```{r , results = "hide", message=FALSE}
+# possible key to link on  
+unique(villo_shp$mu_nl)
+unique(municipalities_shp$name_dut)
+
+# spatial join
+villo_and_municipalities_shp <- st_join(villo_shp, municipalities_shp)
+
+# make levels the same, they are in same position so ok to do this
+levels(municipalities_shp$name_dut) = levels(villo_shp$mu_nl)
+
+# some extra calculations
+municipalities_shp$area <- st_area(municipalities_shp)
+municipalities_centroids_shp <- st_centroid(municipalities_shp)
+dim(st_distance(villo_shp))
+
+plot(st_geometry(st_centroid(municipalities_shp)))
+```
+
+```{r , results = "hide", message=FALSE}
+plot(st_geometry(st_centroid(municipalities_shp)))
+
+# some plots, check crs's first
+st_crs(municipalities_shp)
+st_crs(villo_shp)
+st_crs(villo_and_municipalities_shp)
+
+# tmap_mode("view")
+
+tm_shape(municipalities_shp) +
+  tm_borders() +
+  tm_fill(col = "national_c", alpha = 0.3, legend.show = FALSE) +
+  tm_text("name_dut", size = 0.5) +
+tm_shape(villo_and_municipalities_shp) +
+  tm_symbols(col = "national_c", size = 0.1) +
+  tm_legend(show = FALSE) +
+tm_shape(municipalities_centroids_shp) +
+  tm_dots()
+
+# tmap_mode("plot")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
