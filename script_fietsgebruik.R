@@ -99,7 +99,6 @@ ggplot(count_per_hour) +
   facet_grid(as.factor(week) ~ week_day)
 
 
-
 # UNDER CONSTRUCTION-------------------------------
 
 
@@ -114,12 +113,29 @@ ggplot(count_per_hour) +
 # 
 # 
 # 
-# # read in telpaal devices dataset
-# test_csv2 <- read_csv("http://data-mobility.brussels/geoserver/bm_bike/wfs?service=wfs&version=1.1.0&request=GetFeature&typeName=bm_bike%3Art_counting&outputFormat=csv")
-# head(test_csv2)
-# 
-# test_csv1 %>%
-#   glimpse() %>%
-#   summary()
+# read in telpaal devices dataset
+test_csv <- read_csv("http://data-mobility.brussels/geoserver/bm_bike/wfs?service=wfs&version=1.1.0&request=GetFeature&typeName=bm_bike%3Art_counting&outputFormat=csv")
+head(test_csv)
+
+# the year counts seem unstable, sometimes an NA value is given. Thus better to use saved file.
+test_csv3 <- read_csv(paste0(path1, "/telpalen/telpalen.csv"))
+
+test_csv[, c("device_name", "year_cnt")]
+test_csv3[, c("device_name", "year_cnt")]
+
+# check data and sort on year count of station
+test_csv3 %>%
+  glimpse() %>%
+  summary()
+
+test_csv3_count <- test_csv3 %>%
+  select(id, device_name, road_nl, descr_nl, hour_cnt, day_cnt, year_cnt) %>%
+  arrange(desc(year_cnt))
+
+test_csv3_count
+
+#to write away file
+#write_csv(test_csv3, paste0(path1, "/telpalen/telpalen.csv"))
+
 
 
